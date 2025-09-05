@@ -1,0 +1,47 @@
+    body {
+      background-color: #000;
+      color: #fff;
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding: 20px;
+    }
+	
+	.header-content {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 20px; /* espacio entre logo y texto */
+	flex-wrap: wrap;
+	text-align: center;
+	}
+
+	.logo-side {
+    height: 80px;
+	width: auto;
+	}
+    
+	input {
+      padding: 8px;
+      font-size: 16px;
+    }
+
+    button {
+      padding: 8px 12px;
+      font-size: 16px;
+      margin-left: 10px;
+    }
+
+    .galeria {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-top: 30px;
+    }
+
+    .galeria img {
+      margin: 10px;
+      max-width: 300px;
+      border: 2px solid #444;
+      border-radius: 5px;
+    }
+
