@@ -21,7 +21,7 @@ exports.handler = async (event) => {
     let result = await cloudinary.search
       .expression(`folder=QSL/${callSign}`)
       .sort_by('created_at', 'desc')
-      .max_results(30)
+      .max_results(60)
       .execute();
 
     let images = result.resources.map(img => ({
