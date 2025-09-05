@@ -23,7 +23,7 @@ exports.handler = async (event) => {
     // Búsqueda de imágenes en la carpeta del callSign
     const result = await cloudinary.search
       .expression(`folder=QSL/${callSign}`)  // Asegúrate que la carpeta esté bien especificada
-      .sort_by('public_id', 'desc')  // Ordenar por el ID público, de lo más reciente a lo más antiguo
+      .sort_by('created_at', 'desc')  // Ordenar por fecha de creación (más reciente primero)
       .max_results(30)  // Limitar la cantidad de resultados
       .execute();
 
