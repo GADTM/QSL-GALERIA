@@ -1,0 +1,5 @@
+https://res.cloudinary.com/dgv9hbtxd/image/upload/v1754518142/qsl
+
+CLOUDINARY_CLOUD_NAME = "dgv9hbtxd"
+CLOUDINARY_API_KEY = "148792123799721"
+CLOUDINARY_API_SECRET = "jYf3wFaZjAhp1UUWGIidSb27ByE"

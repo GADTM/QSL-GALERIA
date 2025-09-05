@@ -1,0 +1,59 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Galería QSL por Indicativo</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="header">
+    <div class="header-content">
+      <img src="logo-gadtm.png" alt="Logo Izquierdo" class="logo-side">
+      <h1>🔍 Buscar QSL por Indicativo 📡</h1>
+      <img src="logo-qrz.png" alt="Logo Derecho" class="logo-side">
+      <p>Ingresá tu indicativo para ver las QSLs:</p>
+      <input type="text" id="callsignInput" placeholder="Ej: LU1ABC">
+      <button onclick="cargarGaleria()">Buscar</button>
+    </div>
+    <div class="galeria" id="galeria"></div>
+  </div>
+
+  <script>
+    async function cargarGaleria() {
+      const callSign = document.getElementById("callsignInput").value.trim().toUpperCase();
+      const galeria = document.getElementById("galeria");
+      galeria.innerHTML = "";
+
+      if (!callSign) {
+        alert("Por favor ingresá un indicativo.");
+        return;
+      }
+
+      const url = `/.netlify/functions/buscarQSL?callSign=${callSign}`;
+
+      try {
+        const res = await fetch(url);
+        if (!res.ok) throw new Error("No se pudo acceder a la galería");
+        const images = await res.json();
+
+        if (!images.length) {
+          galeria.innerHTML = `<p>No se encontraron QSLs para <strong>${callSign}</strong>.</p>`;
+          return;
+        }
+
+        images.forEach(img => {
+          const imgEl = document.createElement("img");
+          imgEl.src = img.url;
+          imgEl.alt = img.public_id;
+          galeria.appendChild(imgEl);
+        });
+
+      } catch (error) {
+        galeria.innerHTML = `<p style="color: red;">❌ Error al consultar imágenes para <strong>${callSign}</strong>.</p>`;
+        console.error("Error al cargar la galería:", error);
+      }
+    }
+  </script>
+</body>
+</html>
