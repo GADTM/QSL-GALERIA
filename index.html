@@ -52,8 +52,8 @@
   // Extraer fecha de subida y formatear a DDMMYY
   const fecha = new Date(img.created_at);
   const dd = String(fecha.getDate()).padStart(2, '0');
-  const mm = String(fecha.getMonth() + 1).padStart(2, '0'); // meses empiezan en 0
-  const yy = String(fecha.getFullYear()).slice(-2); // últimos 2 dígitos
+  const mm = String(fecha.getMonth() + 1).padStart(2, '0');
+  const yy = String(fecha.getFullYear()).slice(-2);
 
   const fechaStr = `${dd}${mm}${yy}`;
 
@@ -63,7 +63,7 @@
   // Crear enlace con descarga directa
   const link = document.createElement("a");
   link.href = img.url;
-  link.download = fileName;
+  link.setAttribute("download", fileName); // 🔑 fuerza descarga
 
   // Miniatura
   const imgEl = document.createElement("img");
@@ -74,6 +74,7 @@
   link.appendChild(imgEl);
   galeria.appendChild(link);
 });
+
 
       } catch (error) {
         galeria.innerHTML = `<p style="color: red;">❌ Error al consultar imágenes para <strong>${callSign}</strong>.</p>`;
