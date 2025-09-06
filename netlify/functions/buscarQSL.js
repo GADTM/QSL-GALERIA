@@ -24,13 +24,15 @@ exports.handler = async (event) => {
       .max_results(60)
       .execute();
 
-    let images = result.resources.map(img => ({
-      url: img.secure_url,
-      public_id: img.public_id,
-      format: img.format,
-      width: img.width,
-      height: img.height
-    }));
+   let images = result.resources.map(img => ({
+  url: img.secure_url,
+  public_id: img.public_id,
+  format: img.format,
+  width: img.width,
+  height: img.height,
+  created_at: img.created_at // ✅ esto es clave
+}));
+
 
     // Si hay más imágenes, agregar un cursor para la siguiente solicitud
     if (result.next_cursor) {
