@@ -1,12 +1,27 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
   <title>Galería QSL por Indicativo</title>
   <link rel="stylesheet" href="style.css">
+  <style>
+    /* Mini estilos rápidos para la galería */
+    .galeria {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 20px;
+    }
+    .galeria img {
+      cursor: pointer; /* Indica que se puede hacer clic */
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+  </style>
 </head>
 <body>
+
+  <!-- BLOQUE HEADER -->
   <div class="header">
     <div class="header-content">
       <img src="logo-gadtm.png" alt="Logo Izquierdo" class="logo-side">
@@ -16,20 +31,25 @@
       <input type="text" id="callsignInput" placeholder="Ej: LU1ABC">
       <button onclick="cargarGaleria()">Buscar</button>
     </div>
+
+    <!-- BLOQUE GALERÍA -->
     <div class="galeria" id="galeria"></div>
   </div>
 
+  <!-- BLOQUE SCRIPT -->
   <script>
     async function cargarGaleria() {
+      // Obtener el valor del input y convertir a mayúsculas
       const callSign = document.getElementById("callsignInput").value.trim().toUpperCase();
       const galeria = document.getElementById("galeria");
-      galeria.innerHTML = "";
+      galeria.innerHTML = ""; // Limpiar la galería antes de cargar nuevas imágenes
 
       if (!callSign) {
         alert("Por favor ingresá un indicativo.");
         return;
       }
 
+      // URL de la función serverless en Netlify que devuelve JSON con imágenes
       const url = `/.netlify/functions/buscarQSL?callSign=${callSign}`;
 
       try {
@@ -42,43 +62,49 @@
           return;
         }
 
-  // Proceso de imagenes de las QSL
-  images.forEach(img => {
-  if (!img.url) return;
-  // Indicativo en mayúsculas
-  const callSignUpper = callSign.toUpperCase();
-  // Extraer fecha de subida y formatea a DDMMAA
-  const fecha = new Date(img.created_at);
-  const dd = String(fecha.getDate()).padStart(2, '0');
-  const mm = String(fecha.getMonth() + 1).padStart(2, '0');
-  const yy = String(fecha.getFullYear()).slice(-2);
-  const fechaStr = `${dd}${mm}${yy}`;
-  const fileName = `${callSignUpper}_${fechaStr}.${img.format}`;
+        // BLOQUE RECORRER IMÁGENES
+        images.forEach(img => {
+          if (!img.url) return; // saltar si no hay URL (ej. next_cursor)
 
-  const imgEl = document.createElement("img");
-  imgEl.src = img.url;
-  imgEl.alt = fileName;
-  imgEl.style.width = "200px";
-  imgEl.style.cursor = "pointer";
+          // Extraer la fecha de subida y formatearla a DDMMYY
+          const fecha = new Date(img.created_at);
+          const dd = String(fecha.getDate()).padStart(2, '0');
+          const mm = String(fecha.getMonth() + 1).padStart(2, '0');
+          const yy = String(fecha.getFullYear()).slice(-2);
+          const fechaStr = `${dd}${mm}${yy}`;
 
-  // Al hacer clic descargamos la imagen
-  imgEl.addEventListener("click", async () => {
-    const res = await fetch(img.url);
-    const blob = await res.blob();
-    const blobUrl = URL.createObjectURL(blob);
+          // Crear nombre del archivo: INDICATIVO_FECHA
+          const fileName = `${callSign}_${fechaStr}.${img.format}`;
 
-    const a = document.createElement("a");
-    a.href = blobUrl;
-    a.download = fileName;
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    URL.revokeObjectURL(blobUrl);
-  });
+          // Crear elemento <img> para la miniatura
+          const imgEl = document.createElement("img");
+          imgEl.src = img.url;      // URL de Cloudinary
+          imgEl.alt = fileName;     // texto alternativo
+          imgEl.style.width = "200px"; // tamaño miniatura
 
-  galeria.appendChild(imgEl);
-});
+          // Evento click → descarga automática de la imagen en tamaño original
+          imgEl.addEventListener("click", async () => {
+            try {
+              const res = await fetch(img.url);   // traer la imagen
+              const blob = await res.blob();      // convertir a blob
+              const blobUrl = URL.createObjectURL(blob); // URL temporal
 
+              // Crear enlace temporal y forzar descarga
+              const a = document.createElement("a");
+              a.href = blobUrl;
+              a.download = fileName;
+              document.body.appendChild(a);
+              a.click();       // dispara la descarga
+              a.remove();      // limpiar el DOM
+              URL.revokeObjectURL(blobUrl); // liberar memoria
+            } catch (err) {
+              console.error("Error al descargar la imagen:", err);
+            }
+          });
+
+          // Agregar la miniatura a la galería
+          galeria.appendChild(imgEl);
+        });
 
       } catch (error) {
         galeria.innerHTML = `<p style="color: red;">❌ Error al consultar imágenes para <strong>${callSign}</strong>.</p>`;
@@ -86,5 +112,6 @@
       }
     }
   </script>
+
 </body>
 </html>
