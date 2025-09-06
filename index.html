@@ -45,34 +45,38 @@
   // Proceso de imagenes de las QSL
   images.forEach(img => {
   if (!img.url) return;
-
   // Indicativo en mayúsculas
   const callSignUpper = callSign.toUpperCase();
-
-  // Extraer fecha de subida y formatear a DDMMYY
+  // Extraer fecha de subida y formatea a DDMMAA
   const fecha = new Date(img.created_at);
   const dd = String(fecha.getDate()).padStart(2, '0');
   const mm = String(fecha.getMonth() + 1).padStart(2, '0');
   const yy = String(fecha.getFullYear()).slice(-2);
-
   const fechaStr = `${dd}${mm}${yy}`;
-
-  // Nombre del archivo: INDICATIVO_FECHA
   const fileName = `${callSignUpper}_${fechaStr}.${img.format}`;
 
-  // Crear enlace con descarga directa
-  const link = document.createElement("a");
-  link.href = img.url;
-  link.setAttribute("download", fileName); // 🔑 fuerza descarga
-
-  // Miniatura
   const imgEl = document.createElement("img");
   imgEl.src = img.url;
   imgEl.alt = fileName;
   imgEl.style.width = "200px";
+  imgEl.style.cursor = "pointer";
 
-  link.appendChild(imgEl);
-  galeria.appendChild(link);
+  // Al hacer clic descargamos la imagen
+  imgEl.addEventListener("click", async () => {
+    const res = await fetch(img.url);
+    const blob = await res.blob();
+    const blobUrl = URL.createObjectURL(blob);
+
+    const a = document.createElement("a");
+    a.href = blobUrl;
+    a.download = fileName;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(blobUrl);
+  });
+
+  galeria.appendChild(imgEl);
 });
 
 
