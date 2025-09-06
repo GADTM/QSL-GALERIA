@@ -41,13 +41,26 @@
           galeria.innerHTML = `<p>No se encontraron QSLs para <strong>${callSign}</strong>.</p>`;
           return;
         }
+images.forEach(img => {
+  if (!img.url) return;
 
-        images.forEach(img => {
-          const imgEl = document.createElement("img");
-          imgEl.src = img.url;
-          imgEl.alt = img.public_id;
-          galeria.appendChild(imgEl);
-        });
+  // Crear enlace con descarga directa
+  const link = document.createElement("a");
+  link.href = img.url;
+  link.download = img.public_id + "." + img.format; // nombre del archivo
+
+  // Miniatura de la imagen en la galería
+  const imgEl = document.createElement("img");
+  imgEl.src = img.url;
+  imgEl.alt = img.public_id;
+  imgEl.style.width = "200px"; // ajusta tamaño de preview
+
+  // Insertar la miniatura dentro del enlace
+  link.appendChild(imgEl);
+
+  // Agregar al contenedor
+  galeria.appendChild(link);
+});
 
       } catch (error) {
         galeria.innerHTML = `<p style="color: red;">❌ Error al consultar imágenes para <strong>${callSign}</strong>.</p>`;
