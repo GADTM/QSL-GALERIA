@@ -41,24 +41,37 @@
           galeria.innerHTML = `<p>No se encontraron QSLs para <strong>${callSign}</strong>.</p>`;
           return;
         }
-images.forEach(img => {
+
+  // Proceso de imagenes de las QSL
+  images.forEach(img => {
   if (!img.url) return;
+
+  // Indicativo en mayúsculas
+  const callSignUpper = callSign.toUpperCase();
+
+  // Extraer fecha de subida y formatear a DDMMYY
+  const fecha = new Date(img.created_at);
+  const dd = String(fecha.getDate()).padStart(2, '0');
+  const mm = String(fecha.getMonth() + 1).padStart(2, '0'); // meses empiezan en 0
+  const yy = String(fecha.getFullYear()).slice(-2); // últimos 2 dígitos
+
+  const fechaStr = `${dd}${mm}${yy}`;
+
+  // Nombre del archivo: INDICATIVO_FECHA
+  const fileName = `${callSignUpper}_${fechaStr}.${img.format}`;
 
   // Crear enlace con descarga directa
   const link = document.createElement("a");
   link.href = img.url;
-  link.download = img.public_id + "." + img.format; // nombre del archivo
+  link.download = fileName;
 
-  // Miniatura de la imagen en la galería
+  // Miniatura
   const imgEl = document.createElement("img");
   imgEl.src = img.url;
-  imgEl.alt = img.public_id;
-  imgEl.style.width = "200px"; // ajusta tamaño de preview
+  imgEl.alt = fileName;
+  imgEl.style.width = "200px";
 
-  // Insertar la miniatura dentro del enlace
   link.appendChild(imgEl);
-
-  // Agregar al contenedor
   galeria.appendChild(link);
 });
 
